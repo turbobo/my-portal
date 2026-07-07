@@ -90,6 +90,18 @@ a {
   flex: 1;
 }
 
+.section {
+  margin-bottom: 28px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
