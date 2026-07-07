@@ -3,6 +3,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
@@ -16,6 +17,10 @@
   --radius: 12px;
   --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
   --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 html {
@@ -24,19 +29,26 @@ html {
   -moz-osx-font-smoothing: grayscale;
   color: var(--text);
   background: var(--bg);
+  overscroll-behavior: none;
 }
 
 body {
   min-height: 100dvh;
 }
 
-a { text-decoration: none; color: inherit; }
+a {
+  text-decoration: none;
+  color: inherit;
+  touch-action: manipulation;
+}
 
 /* ─── Page Layout ─── */
 .page {
   max-width: 800px;
   margin: 0 auto;
   padding: 0 20px;
+  padding-left: max(20px, var(--sal));
+  padding-right: max(20px, var(--sar));
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
@@ -45,6 +57,7 @@ a { text-decoration: none; color: inherit; }
 /* ─── Header ─── */
 .header {
   padding: 32px 0 24px;
+  padding-top: calc(32px + var(--sat));
 }
 
 .header-inner {
@@ -83,13 +96,6 @@ a { text-decoration: none; color: inherit; }
   gap: 14px;
 }
 
-@media (max-width: 560px) {
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-}
-
 /* ─── Card ─── */
 .card {
   display: flex;
@@ -104,6 +110,8 @@ a { text-decoration: none; color: inherit; }
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .card:hover {
@@ -113,7 +121,8 @@ a { text-decoration: none; color: inherit; }
 }
 
 .card:active {
-  transform: translateY(0);
+  transform: scale(0.98);
+  box-shadow: var(--shadow);
 }
 
 .card-icon {
@@ -170,21 +179,57 @@ a { text-decoration: none; color: inherit; }
 /* ─── Footer ─── */
 .footer {
   padding: 24px 0 32px;
+  padding-bottom: calc(32px + var(--sab));
   text-align: center;
   font-size: 11px;
   color: var(--text-3);
   letter-spacing: 0.01em;
 }
 
-/* ─── Mobile Adjustments ─── */
-@media (max-width: 560px) {
+/* ─── Mobile (≤ 640px) ─── */
+@media (max-width: 640px) {
+  .page {
+    padding: 0 16px;
+    padding-left: max(16px, var(--sal));
+    padding-right: max(16px, var(--sar));
+  }
+
   .header {
-    padding: 24px 0 20px;
+    padding: 20px 0 16px;
+    padding-top: calc(20px + var(--sat));
+  }
+
+  .logo-text {
+    font-size: 17px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .card {
-    padding: 16px;
+    padding: 14px 16px;
     gap: 12px;
+    min-height: 72px;
+    /* 禁用 hover 上浮效果，改用 active 按压反馈 */
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: var(--shadow);
+    border-color: var(--border);
+  }
+
+  .card:active {
+    transform: scale(0.97);
+    background: #f5f5f4;
+  }
+
+  .card:hover .card-arrow {
+    transform: none;
+    color: var(--text-3);
   }
 
   .card-icon {
@@ -193,7 +238,82 @@ a { text-decoration: none; color: inherit; }
     border-radius: 10px;
   }
 
-  .footer {
-    padding: 20px 0 28px;
+  .card-icon svg {
+    width: 24px;
+    height: 24px;
   }
+
+  .card-title {
+    font-size: 15px;
+  }
+
+  .card-subtitle {
+    font-size: 11px;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 4px;
+  }
+
+  .card-arrow svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .footer {
+    padding: 20px 0 calc(24px + var(--sab));
+    font-size: 10px;
+  }
+}
+
+/* ─── Small phones (≤ 380px) ─── */
+@media (max-width: 380px) {
+  .page {
+    padding: 0 12px;
+    padding-left: max(12px, var(--sal));
+    padding-right: max(12px, var(--sar));
+  }
+
+  .card {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  .card-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .card-desc {
+    font-size: 11px;
+  }
+}
+
+/* ─── Tablet+ (≥ 641px) two-column grid ─── */
+@media (min-width: 641px) and (max-width: 900px) {
+  .grid {
+    gap: 12px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .card:hover { transform: none; }
+  .card:active { transform: none; }
 }
