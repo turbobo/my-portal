@@ -7,16 +7,19 @@
 }
 
 :root {
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --text: #1c1917;
-  --text-2: #57534e;
-  --text-3: #a8a29e;
-  --border: #e7e5e4;
-  --accent: #18181b;
-  --radius: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
-  --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  color-scheme: dark;
+  --bg: #0d0d14;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-hover: rgba(255, 255, 255, 0.1);
+  --text: #f5f5f4;
+  --text-2: #b8b1a8;
+  --text-3: #8d867d;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --glass-blur: 18px;
+  --radius: 14px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.16);
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px);
@@ -36,6 +39,21 @@ body {
   min-height: 100dvh;
 }
 
+/* ─── Aurora 渐变光斑背景层 ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 45% at 12% -8%, rgba(139, 92, 246, 0.3), transparent 62%),
+    radial-gradient(ellipse 45% 38% at 88% 8%, rgba(59, 130, 246, 0.22), transparent 62%),
+    radial-gradient(ellipse 60% 50% at 50% 112%, rgba(236, 72, 153, 0.16), transparent 62%),
+    radial-gradient(ellipse 30% 26% at 28% 58%, rgba(34, 211, 238, 0.09), transparent 60%),
+    var(--bg);
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -52,18 +70,30 @@ a {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  position: relative;
+  z-index: 1;
 }
 
-/* ─── Header ─── */
+/* ─── Header（全宽毛玻璃吸顶）─── */
 .header {
-  padding: 32px 0 24px;
-  padding-top: calc(32px + var(--sat));
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: var(--sat);
+  background: rgba(13, 13, 20, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  padding-left: max(20px, var(--sal));
+  padding-right: max(20px, var(--sar));
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .logo-group {
@@ -88,6 +118,7 @@ a {
 /* ─── Main Grid ─── */
 .main {
   flex: 1;
+  padding-top: 32px;
 }
 
 .section {
@@ -99,7 +130,7 @@ a {
   font-weight: 500;
   color: var(--text-3);
   letter-spacing: 0.04em;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .grid {
@@ -108,7 +139,7 @@ a {
   gap: 14px;
 }
 
-/* ─── Card ─── */
+/* ─── Card（暗色玻璃拟态）─── */
 .card {
   display: flex;
   align-items: flex-start;
@@ -118,7 +149,9 @@ a {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
@@ -127,8 +160,9 @@ a {
 }
 
 .card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
   box-shadow: var(--shadow-hover);
-  border-color: #d6d3d1;
   transform: translateY(-2px);
 }
 
@@ -206,13 +240,18 @@ a {
     padding-right: max(16px, var(--sar));
   }
 
-  .header {
-    padding: 20px 0 16px;
-    padding-top: calc(20px + var(--sat));
+  .header-inner {
+    padding: 14px 16px;
+    padding-left: max(16px, var(--sal));
+    padding-right: max(16px, var(--sar));
   }
 
   .logo-text {
     font-size: 17px;
+  }
+
+  .main {
+    padding-top: 24px;
   }
 
   .grid {
@@ -225,18 +264,19 @@ a {
     gap: 12px;
     min-height: 72px;
     /* 禁用 hover 上浮效果，改用 active 按压反馈 */
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    transition: background 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
   }
 
   .card:hover {
     transform: none;
-    box-shadow: var(--shadow);
+    background: var(--surface);
     border-color: var(--border);
+    box-shadow: var(--shadow);
   }
 
   .card:active {
     transform: scale(0.97);
-    background: #f5f5f4;
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .card:hover .card-arrow {
@@ -284,6 +324,12 @@ a {
 @media (max-width: 380px) {
   .page {
     padding: 0 12px;
+    padding-left: max(12px, var(--sal));
+    padding-right: max(12px, var(--sar));
+  }
+
+  .header-inner {
+    padding: 12px;
     padding-left: max(12px, var(--sal));
     padding-right: max(12px, var(--sar));
   }
